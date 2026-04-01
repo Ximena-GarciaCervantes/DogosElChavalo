@@ -16,7 +16,12 @@ export default async function ProtectedLayout({
             <Image src="/brand/mascota.png" alt="Mascota" width={48} height={48} className="h-12 w-12" />
             <div>
               <p className="headline text-3xl leading-none text-[var(--primary-strong)]">DogosElChavalo</p>
-              <p className="text-xs uppercase tracking-[0.2em] text-stone-400">{session?.name ?? "Usuario"}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs uppercase tracking-[0.2em] text-stone-400">{session?.name ?? "Usuario"}</p>
+                <span className="rounded-full border border-[var(--line)] bg-[var(--surface-strong)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  vercel ready
+                </span>
+              </div>
             </div>
           </div>
 
