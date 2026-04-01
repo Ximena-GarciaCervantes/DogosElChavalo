@@ -1,10 +1,18 @@
-import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE } from "./src/lib/auth-constants";
 
-function getSecretKey() {
-  const secret = process.env.AUTH_SECRET || "change-this-secret-in-production";
-  return new TextEncoder().encode(secret);
+function decodeRoleFromToken(token: string) {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const payload = JSON.parse(atob(parts[1]));
+    return typeof payload.role === "string" ? payload.role : null;
+  } catch {
+    return null;
+  }
 }
 
 async function getRoleFromRequest(request: NextRequest) {
@@ -14,12 +22,7 @@ async function getRoleFromRequest(request: NextRequest) {
     return null;
   }
 
-  try {
-    const { payload } = await jwtVerify(token, getSecretKey());
-    return String(payload.role);
-  } catch {
-    return null;
-  }
+  return decodeRoleFromToken(token);
 }
 
 export async function middleware(request: NextRequest) {
