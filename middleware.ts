@@ -1,6 +1,6 @@
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE } from "@/lib/auth-constants";
+import { SESSION_COOKIE } from "./src/lib/auth-constants";
 
 function getSecretKey() {
   const secret = process.env.AUTH_SECRET || "change-this-secret-in-production";
