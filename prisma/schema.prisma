@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum CashMovementType {
+  OPEN
+  CLOSE
+  IN
+  OUT
+  SALE
+}
+
+enum UserRole {
+  ADMIN
+  CASHIER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(CASHIER)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sales        Sale[]
+}
+
+model Product {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  description String?
+  price     Decimal    @db.Decimal(10, 2)
+  active    Boolean    @default(true)
+  stock     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  saleItems SaleItem[]
+}
+
+model Sale {
+  id            String        @id @default(cuid())
+  total         Decimal       @db.Decimal(10, 2)
+  paymentMethod PaymentMethod @default(CASH)
+  note          String?
+  createdAt     DateTime      @default(now())
+  userId        String
+  items         SaleItem[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+}
+
+model SaleItem {
+  id        String   @id @default(cuid())
+  quantity  Int
+  unitPrice Decimal  @db.Decimal(10, 2)
+  subtotal  Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  saleId    String
+  productId String
+
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model CashMovement {
+  id        String           @id @default(cuid())
+  type      CashMovementType
+  amount    Decimal          @db.Decimal(10, 2)
+  note      String?
+  createdAt DateTime         @default(now())
+}
