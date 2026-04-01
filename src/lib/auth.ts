@@ -1,8 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-
-export const SESSION_COOKIE = "dogos_session";
+import { SESSION_COOKIE } from "@/lib/auth-constants";
 
 type SessionPayload = {
   userId: string;
